@@ -8,6 +8,7 @@ import {
   DocumentData,
   DocumentReference,
   Firestore,
+  FirestoreError,
   getDocs,
   query,
   QueryConstraint,
@@ -15,8 +16,9 @@ import {
   QuerySnapshot,
   setDoc,
 } from "@angular/fire/firestore";
-import { defer, map, Observable } from "rxjs";
+import { catchError, defer, map, Observable, throwError } from "rxjs";
 import { FirestoreCollectionsNames } from "./firestore-collections.enum";
+import { firestoreErrHandler } from "./firestore-err-handler";
 
 @Injectable({
   providedIn: "root",
@@ -56,6 +58,9 @@ export class FirestoreService<Data extends DocumentData> {
           ...docSnap.data(),
           id: docSnap.id,
         }))
+      ),
+      catchError((err: FirestoreError) =>
+        throwError(() => firestoreErrHandler(err))
       )
     );
   }
@@ -70,7 +75,10 @@ export class FirestoreService<Data extends DocumentData> {
       map((docRef: DocumentReference<Data, Data>) => ({
         ...data,
         id: docRef.id,
-      }))
+      })),
+      catchError((err: FirestoreError) =>
+        throwError(() => firestoreErrHandler(err))
+      )
     );
   }
 
@@ -81,13 +89,22 @@ export class FirestoreService<Data extends DocumentData> {
   ): Observable<Data & { id: string }> {
     return defer(() =>
       setDoc(this.getDocumentRef(collectionPath, id), data)
-    ).pipe(map(() => ({ ...data, id })));
+    ).pipe(
+      map(() => ({ ...data, id })),
+      catchError((err: FirestoreError) =>
+        throwError(() => firestoreErrHandler(err))
+      )
+    );
   }
 
   public deleteDocument(
     collectionPath: FirestoreCollectionsNames,
     id: string
   ): Observable<void> {
-    return defer(() => deleteDoc(this.getDocumentRef(collectionPath, id)));
+    return defer(() => deleteDoc(this.getDocumentRef(collectionPath, id))).pipe(
+      catchError((err: FirestoreError) =>
+        throwError(() => firestoreErrHandler(err))
+      )
+    );
   }
 }
