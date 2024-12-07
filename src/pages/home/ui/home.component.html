@@ -1,0 +1,18 @@
+<header class="header">
+  <div class="header__container">
+    <button class="header__menu" type="button"><span></span></button>
+    <h1 class="header__title">BookMate</h1>
+    <div class="header__search">
+      <ng-content select="search"></ng-content>
+    </div>
+  </div>
+  <div class="tabs">
+    <a class="tabs__tab" routerLink="books" routerLinkActive="tabs__tab_active"
+      >Discover</a
+    >
+    <a class="tabs__tab" routerLink="posts" routerLinkActive="tabs__tab_active"
+      >Community</a
+    >
+  </div>
+</header>
+<router-outlet></router-outlet>
