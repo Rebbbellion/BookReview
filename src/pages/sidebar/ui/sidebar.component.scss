@@ -1,0 +1,14 @@
+@use "vars" as *;
+
+:host {
+  display: block;
+}
+
+.menu {
+  &__buttons {
+  }
+  &__user {
+  }
+  &__auth-buttons {
+  }
+}

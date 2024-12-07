@@ -1,10 +1,10 @@
 <header class="header">
   <div class="header__container">
-    <button class="header__menu" type="button"><span></span></button>
+    <button class="header__menu" type="button" routerLink="/menu">
+      <span></span>
+    </button>
     <h1 class="header__title">BookMate</h1>
-    <div class="header__search">
-      <ng-content select="search"></ng-content>
-    </div>
+    <div class="header__search"></div>
   </div>
   <div class="tabs">
     <a class="tabs__tab" routerLink="books" routerLinkActive="tabs__tab_active"
