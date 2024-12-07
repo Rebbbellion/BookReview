@@ -13,3 +13,10 @@ export interface User {
   id: string;
   details: UserDetails;
 }
+
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  displayName: string;
+  photoURL: string | null;
+}

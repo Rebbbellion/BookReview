@@ -1,13 +1,11 @@
 import { createActionGroup, props } from "@ngrx/store";
-import { User, UserDetails } from "./user.model";
+import { RegisterCredentials, User } from "./user.model";
 
 export const registerActions = createActionGroup({
   source: "User API",
   events: {
     registerReq: props<{
-      email: string;
-      password: string;
-      details: UserDetails;
+      credentials: RegisterCredentials;
     }>(),
     registerReqSuccess: props<{ user: User }>(),
     registerReqFailure: props<{ err: Error }>(),
