@@ -1,0 +1,52 @@
+@use "vars" as *;
+
+:host {
+  display: inline-block;
+  font-weight: 700;
+
+  &.close-button {
+    button {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      &::after,
+      &::before {
+        content: "";
+        position: absolute;
+        display: inline-block;
+        inset: 0;
+        margin: auto;
+        height: 2px;
+        background-color: $gray-14;
+      }
+      &::after {
+        transform: rotate(45deg);
+      }
+      &::before {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+  &.primary-button {
+    button {
+      width: 100%;
+      padding: 1.2188rem 2.5rem;
+      background-color: $primary;
+      color: white;
+      transition: all 0.3s;
+      &:hover {
+        background-color: #091cc8;
+      }
+    }
+  }
+  &.secondary-button {
+    button {
+      width: 100%;
+      padding: 1.2188rem 2.5rem;
+      transition: all 0.3s;
+      &:hover {
+        background-color: $gray-94;
+      }
+    }
+  }
+}
