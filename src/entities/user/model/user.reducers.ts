@@ -2,7 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import { registerActions } from "./user.actions";
 import { User } from "./user.model";
 
-const enum LoginStatus {
+export const enum LoginStatus {
   NotLogined = "not-logined",
   Logining = "logining",
   Logined = "logined",

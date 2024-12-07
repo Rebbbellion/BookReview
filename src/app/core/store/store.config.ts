@@ -5,11 +5,13 @@ import {
 } from "@angular/core";
 
 import { provideEffects } from "@ngrx/effects";
-import { provideStore } from "@ngrx/store";
+import { provideState, provideStore } from "@ngrx/store";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
+import { UserEffects, userFeature } from "entities/user";
 
 export const storeConfig: EnvironmentProviders = makeEnvironmentProviders([
   provideStore(),
-  provideEffects(),
+  provideState(userFeature),
+  provideEffects(UserEffects),
   provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
 ]);
