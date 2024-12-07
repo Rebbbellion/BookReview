@@ -8,7 +8,6 @@ import {
   DocumentData,
   DocumentReference,
   Firestore,
-  FirestoreError,
   getDocs,
   query,
   QueryConstraint,
@@ -16,95 +15,82 @@ import {
   QuerySnapshot,
   setDoc,
 } from "@angular/fire/firestore";
-import { catchError, defer, map, Observable, throwError } from "rxjs";
-import { FirestoreCollectionsNames } from "./firestore-collections.enum";
+import { defer, map, Observable } from "rxjs";
+import { EntityDTO } from "shared/lib/types";
+import { toEntityFormat, toServerFormat } from "../store-data-mappers";
+import { StoreService } from "../store-service.interface";
 import { firestoreErrHandler } from "./firestore-err-handler";
 
 @Injectable({
   providedIn: "root",
 })
-export class FirestoreService<Data extends DocumentData> {
+export class FirestoreService<Data extends DocumentData & { id: string }>
+  implements StoreService<Data>
+{
   private readonly firestore: Firestore = inject(Firestore);
 
   private getCollectionRef(
-    collectionPath: FirestoreCollectionsNames
-  ): CollectionReference<Data, Data> {
+    collectionPath: string
+  ): CollectionReference<EntityDTO<Data>, EntityDTO<Data>> {
     return collection(this.firestore, collectionPath) as CollectionReference<
-      Data,
-      Data
+      EntityDTO<Data>,
+      EntityDTO<Data>
     >;
   }
 
   private getDocumentRef(
-    collectionPath: FirestoreCollectionsNames,
+    collectionPath: string,
     id: string
-  ): DocumentReference<Data, Data> {
+  ): DocumentReference<Data, EntityDTO<Data>> {
     return doc(this.firestore, collectionPath, id) as DocumentReference<
       Data,
-      Data
+      EntityDTO<Data>
     >;
   }
 
   public getDocuments(
-    collectionPath: FirestoreCollectionsNames,
+    collectionPath: string,
     ...queries: QueryConstraint[]
-  ): Observable<(Data & { id: string })[]> {
+  ): Observable<Data[]> {
     return defer(() => {
       const queryRef = query(this.getCollectionRef(collectionPath), ...queries);
       return getDocs(queryRef);
     }).pipe(
-      map((querySnap: QuerySnapshot<Data, Data>) =>
-        querySnap.docs.map((docSnap: QueryDocumentSnapshot<Data, Data>) => ({
-          ...docSnap.data(),
-          id: docSnap.id,
-        }))
+      map((querySnap: QuerySnapshot<EntityDTO<Data>, EntityDTO<Data>>) =>
+        querySnap.docs.map(
+          (docSnap: QueryDocumentSnapshot<EntityDTO<Data>, EntityDTO<Data>>) =>
+            toEntityFormat<Data>(docSnap.data(), docSnap.id)
+        )
       ),
-      catchError((err: FirestoreError) =>
-        throwError(() => firestoreErrHandler(err))
-      )
+      firestoreErrHandler()
     );
   }
 
-  public addDocument(
-    collectionPath: FirestoreCollectionsNames,
-    data: Data
-  ): Observable<Data & { id: string }> {
+  public addDocument(collectionPath: string, data: Data): Observable<Data> {
+    const reqBody: EntityDTO<Data> = toServerFormat<Data>(data);
     return defer(() =>
-      addDoc(this.getCollectionRef(collectionPath), data)
+      addDoc(this.getCollectionRef(collectionPath), reqBody)
     ).pipe(
-      map((docRef: DocumentReference<Data, Data>) => ({
-        ...data,
-        id: docRef.id,
-      })),
-      catchError((err: FirestoreError) =>
-        throwError(() => firestoreErrHandler(err))
-      )
+      map((docRef: DocumentReference<EntityDTO<Data>, EntityDTO<Data>>) =>
+        toEntityFormat<Data>(reqBody, docRef.id)
+      ),
+      firestoreErrHandler()
     );
   }
 
-  public upsertDocument(
-    collectionPath: FirestoreCollectionsNames,
-    data: Data,
-    id: string
-  ): Observable<Data & { id: string }> {
+  public upsertDocument(collectionPath: string, data: Data): Observable<Data> {
+    const reqBody: EntityDTO<Data> = toServerFormat<Data>(data);
     return defer(() =>
-      setDoc(this.getDocumentRef(collectionPath, id), data)
+      setDoc(this.getDocumentRef(collectionPath, data.id), reqBody)
     ).pipe(
-      map(() => ({ ...data, id })),
-      catchError((err: FirestoreError) =>
-        throwError(() => firestoreErrHandler(err))
-      )
+      map(() => toEntityFormat<Data>(reqBody, data.id)),
+      firestoreErrHandler()
     );
   }
 
-  public deleteDocument(
-    collectionPath: FirestoreCollectionsNames,
-    id: string
-  ): Observable<void> {
+  public deleteDocument(collectionPath: string, id: string): Observable<void> {
     return defer(() => deleteDoc(this.getDocumentRef(collectionPath, id))).pipe(
-      catchError((err: FirestoreError) =>
-        throwError(() => firestoreErrHandler(err))
-      )
+      firestoreErrHandler()
     );
   }
 }
