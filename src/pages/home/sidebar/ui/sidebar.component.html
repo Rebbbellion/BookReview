@@ -1,0 +1,30 @@
+<app-popup>
+  <div class="menu">
+    <div class="menu__buttons">
+      <app-button></app-button>
+      <app-search></app-search>
+    </div>
+    <div class="menu__user">
+      @if (user$ |async) {
+      <div></div>
+      } @else {
+      <div class="menu__auth-buttons">
+        <app-button
+          [buttonConfig]="REGISTER_BUTTON"
+          routerLink="register"
+        ></app-button>
+        <app-button
+          [buttonConfig]="LOGIN_BUTTON"
+          routerLink="login"
+        ></app-button>
+      </div>
+      }
+    </div>
+    <nav class="menu__navigation">
+      <ul class="menu__list">
+        <li class="menu__item"><a routerLink="/">Home</a></li>
+      </ul>
+    </nav>
+  </div>
+</app-popup>
+<router-outlet></router-outlet>

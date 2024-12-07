@@ -1,0 +1,35 @@
+@use "vars" as *;
+
+:host {
+  display: block;
+}
+
+.menu {
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 42px;
+  }
+  &__user {
+    margin-bottom: 32px;
+    width: 100vw;
+    position: relative;
+    left: -28px;
+  }
+  &__auth-buttons {
+    position: relative;
+    margin: 0px auto;
+    display: flex;
+    padding: 10px;
+    gap: 10px;
+    app-button {
+      width: 50%;
+    }
+  }
+
+  &__item {
+    font-weight: 500;
+    padding: 16px 0px;
+  }
+}
