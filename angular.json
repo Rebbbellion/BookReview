@@ -37,7 +37,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@ngx-env/builder:application",
           "options": {
             "outputPath": "dist/book-review",
             "index": "src/index.html",
@@ -55,6 +55,9 @@
             "scripts": [],
             "stylePreprocessorOptions": {
               "includePaths": ["src/shared/assets/scss"]
+            },
+            "ngxEnv": {
+              "prefix": "NG_"
             }
           },
           "configurations": {
@@ -88,7 +91,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@ngx-env/builder:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "book-review:build:production"
@@ -100,7 +103,7 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@ngx-env/builder:extract-i18n"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
